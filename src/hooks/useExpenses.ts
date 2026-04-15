@@ -1,12 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
+import { Expense } from "@/types";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export function useExpenses() {
   return useQuery({
     queryKey: ["expenses"],
-    queryFn: async () => {
+    queryFn: async (): Promise<Expense[]> => {
       const res = await axios.get(`${API_URL}/expenses`);
       return res.data;
     },
