@@ -1,18 +1,33 @@
 "use client";
 
+import { useState } from "react";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useBalance } from "@/hooks/useBalance";
 import { Expense } from "@/types";
 
+function getCurrentMonth() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+}
+
 export default function Home() {
-  const { data: expenses, isLoading: expensesLoading } = useExpenses();
-  const { data: balance, isLoading: balanceLoading } = useBalance();
+  const [month, setMonth] = useState(getCurrentMonth());
+  const { data: expenses, isLoading: expensesLoading } = useExpenses(month);
+  const { data: balance, isLoading: balanceLoading } = useBalance(month);
 
   if (expensesLoading || balanceLoading) return <p>Loading...</p>;
 
   return (
     <main className="max-w-lg mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Expense Tracker</h1>
+
+      {/* Month Selector */}
+      <input
+        type="month"
+        value={month}
+        onChange={(e) => setMonth(e.target.value)}
+        className="border rounded p-2 mb-6 w-full"
+      />
 
       {/* Balance Summary */}
       <div className="bg-slate-100 rounded-lg p-4 mb-6">
