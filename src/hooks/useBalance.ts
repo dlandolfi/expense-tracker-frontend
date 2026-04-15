@@ -1,15 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-
 import { BalanceResponse } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-export function useBalance() {
+export function useBalance(month?: string) {
   return useQuery({
-    queryKey: ["balance"],
+    queryKey: ["balance", month],
     queryFn: async (): Promise<BalanceResponse> => {
-      const res = await axios.get(`${API_URL}/balance`);
+      const res = await axios.get(`${API_URL}/balance`, {
+        params: { month },
+      });
       return res.data;
     },
   });

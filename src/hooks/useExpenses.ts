@@ -5,11 +5,11 @@ import { Expense } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-export function useExpenses() {
+export function useExpenses(month?: string) {
   return useQuery({
-    queryKey: ["expenses"],
+    queryKey: ["expenses", month],
     queryFn: async (): Promise<Expense[]> => {
-      const res = await axios.get(`${API_URL}/expenses`);
+      const res = await axios.get(`${API_URL}/expenses`, { params: { month } });
       return res.data;
     },
   });
