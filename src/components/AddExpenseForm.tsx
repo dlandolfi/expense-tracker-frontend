@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -73,6 +74,9 @@ export default function AddExpenseForm() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Expense</DialogTitle>
+          <DialogDescription>
+            Fill in the details to add a new shared expense.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <Input
