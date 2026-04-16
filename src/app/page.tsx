@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useExpenses } from "@/hooks/useExpenses";
+import { useDeleteExpense } from "@/hooks/useExpenses";
 import { useBalance } from "@/hooks/useBalance";
 import { Expense } from "@/types";
 import AddExpenseForm from "@/components/AddExpenseForm";
+import { Button } from "@/components/ui/button";
 
 function getCurrentMonth() {
   const now = new Date();
@@ -13,8 +15,10 @@ function getCurrentMonth() {
 
 export default function Home() {
   const [month, setMonth] = useState(getCurrentMonth());
+
   const { data: expenses, isLoading: expensesLoading } = useExpenses(month);
   const { data: balance, isLoading: balanceLoading } = useBalance(month);
+  const { mutate: deleteExpense } = useDeleteExpense();
 
   if (expensesLoading || balanceLoading) return <p>Loading...</p>;
 
@@ -45,11 +49,20 @@ export default function Home() {
       <ul className="space-y-2">
         {expenses?.map((expense: Expense) => (
           <li key={expense.id} className="bg-white border rounded-lg p-3">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span>{expense.description}</span>
-              <span className="font-medium">
-                ${Number(expense.amount).toFixed(2)}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">
+                  ${Number(expense.amount).toFixed(2)}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => deleteExpense(expense.id)}
+                >
+                  x
+                </Button>
+              </div>
             </div>
             <div className="text-sm text-slate-500">
               {expense.category} · Paid by {expense.paidBy.name}
