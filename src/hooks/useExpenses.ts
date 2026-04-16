@@ -29,6 +29,7 @@ export function useCreateExpense() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["balance"] });
     },
   });
 }

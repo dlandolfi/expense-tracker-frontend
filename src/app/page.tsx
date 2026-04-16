@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useBalance } from "@/hooks/useBalance";
 import { Expense } from "@/types";
+import AddExpenseForm from "@/components/AddExpenseForm";
 
 function getCurrentMonth() {
   const now = new Date();
@@ -19,7 +20,10 @@ export default function Home() {
 
   return (
     <main className="max-w-lg mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Expense Tracker</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold mb-4">Expense Tracker</h1>
+        <AddExpenseForm />
+      </div>
 
       {/* Month Selector */}
       <input
