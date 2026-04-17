@@ -5,16 +5,25 @@ import { useExpenses } from "@/hooks/useExpenses";
 import { useBalance } from "@/hooks/useBalance";
 import { useDeleteExpense } from "@/hooks/useExpenses";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import AddExpenseForm from "@/components/AddExpenseForm";
 import { Expense } from "@/types";
 
-function getCurrentMonth() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-}
-
 export default function Home() {
-  const [month, setMonth] = useState(getCurrentMonth());
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+
+  const [year, setYear] = useState(currentYear);
+  const [monthNum, setMonthNum] = useState(currentMonth);
+
+  const month = `${year}-${String(monthNum).padStart(2, "0")}`;
+
   const { data: expenses, isLoading: expensesLoading } = useExpenses(month);
   const { data: balance, isLoading: balanceLoading } = useBalance(month);
   const { mutate: deleteExpense } = useDeleteExpense();
@@ -30,18 +39,46 @@ export default function Home() {
   return (
     <main className="max-w-lg mx-auto p-4 pb-12">
       {/* Header */}
-      <div className="flex justify-between items-center py-4 mb-6">
+      <div className="flex justify-between items-center py-4 mb-6 gap-2">
         <h1 className="text-2xl font-bold">Expense Tracker</h1>
         <AddExpenseForm />
       </div>
 
       {/* Month Selector */}
-      <input
-        type="month"
-        value={month}
-        onChange={(e) => setMonth(e.target.value)}
-        className="w-full bg-muted text-foreground border border-border rounded-lg p-2 mb-6"
-      />
+      <div className="flex gap-2 mb-6">
+        <Select
+          value={monthNum.toString()}
+          onValueChange={(val) => setMonthNum(Number(val))}
+        >
+          <SelectTrigger className="flex-1">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+              <SelectItem key={m} value={m.toString()}>
+                {new Date(2000, m - 1).toLocaleString("default", {
+                  month: "long",
+                })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={year.toString()}
+          onValueChange={(val) => setYear(Number(val))}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {[currentYear - 1, currentYear, currentYear + 1].map((y) => (
+              <SelectItem key={y} value={y.toString()}>
+                {y}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Balance Card */}
       <div className="rounded-xl border border-border bg-card p-5 mb-6 space-y-3">
