@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useExpenses } from "@/hooks/useExpenses";
-import { useBalance } from "@/hooks/useBalance";
-import { useDeleteExpense } from "@/hooks/useExpenses";
+
+import AddExpenseForm from "@/components/AddExpenseForm";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -12,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import AddExpenseForm from "@/components/AddExpenseForm";
+import { useBalance } from "@/hooks/useBalance";
+import { useDeleteExpense, useExpenses } from "@/hooks/useExpenses";
 import { Expense } from "@/types";
 
 export default function Home() {
