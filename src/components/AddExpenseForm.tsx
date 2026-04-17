@@ -39,8 +39,8 @@ export default function AddExpenseForm() {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<ExpenseCategory>("OTHER");
-  const [paidById, setPaidById] = useState<number | null>(null);
+  const [category, setCategory] = useState<ExpenseCategory>("GROCERIES");
+  const [paidById, setPaidById] = useState<number | null>(1);
 
   const { data: users } = useUsers();
   const { mutate: createExpense, isPending } = useCreateExpense();
