@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useBalance } from "@/hooks/useBalance";
 import { useDeleteExpense, useExpenses } from "@/hooks/useExpenses";
+import { useUsers } from "@/hooks/useUsers";
 import { Expense } from "@/types";
 
 export default function Home() {
@@ -27,6 +28,8 @@ export default function Home() {
   const { data: expenses, isLoading: expensesLoading } = useExpenses(month);
   const { data: balance, isLoading: balanceLoading } = useBalance(month);
   const { mutate: deleteExpense } = useDeleteExpense();
+
+  const { data: users } = useUsers();
 
   if (expensesLoading || balanceLoading) {
     return (
@@ -101,7 +104,9 @@ export default function Home() {
             }`}
           >
             <span>
-              User {entry.userId} {entry.status}
+              {users?.find((u) => u.id === entry.userId)?.name ??
+                `User ${entry.userId}`}{" "}
+              {entry.status}
             </span>
             <span>${entry.amount.toFixed(2)}</span>
           </div>
