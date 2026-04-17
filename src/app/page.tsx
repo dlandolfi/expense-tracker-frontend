@@ -18,7 +18,7 @@ import { Expense } from "@/types";
 
 export default function Home() {
   const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
+  const currentMonth = new Date().getMonth() + 1;
 
   const [year, setYear] = useState(currentYear);
   const [monthNum, setMonthNum] = useState(currentMonth);
