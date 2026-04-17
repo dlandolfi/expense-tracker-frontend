@@ -45,7 +45,7 @@ export default function AddExpenseForm() {
   const { mutate: createExpense, isPending } = useCreateExpense();
 
   function handleSubmit() {
-    if (!description || !amount || !paidById) return;
+    if (!amount || !paidById) return;
 
     createExpense(
       {
