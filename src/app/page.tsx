@@ -100,7 +100,9 @@ export default function Home() {
           <div
             key={entry.userId}
             className={`flex justify-between text-sm font-medium ${
-              entry.status === "owed" ? "text-[#98971a]" : "text-[#cc241d]"
+              entry.status === "owed"
+                ? "text-[var(--color-owed)]"
+                : "text-[var(--color-owes)]"
             }`}
           >
             <span>
