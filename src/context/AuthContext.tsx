@@ -14,13 +14,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [credentials, setCredentials] = useState<{
     username: string;
     password: string;
-  } | null>(null);
+  } | null>(() => {
+    if (typeof window === "undefined") return null;
+    const stored = localStorage.getItem("auth");
+    return stored ? JSON.parse(stored) : null;
+  });
 
   function login(username: string, password: string) {
-    setCredentials({ username, password });
+    const creds = { username, password };
+    localStorage.setItem("auth", JSON.stringify(creds));
+    setCredentials(creds);
   }
 
   function logout() {
+    localStorage.removeItem("auth");
     setCredentials(null);
   }
 
