@@ -47,3 +47,23 @@ export function useDeleteExpense() {
     },
   });
 }
+
+export function useUpdateExpense() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      id: number;
+      description: string;
+      amount: number;
+      paidById: number;
+      category: string;
+    }) => {
+      const res = await axios.put(`${API_URL}/expenses/${data.id}`, data);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["balance"] });
+    },
+  });
+}
