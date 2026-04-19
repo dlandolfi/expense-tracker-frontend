@@ -28,8 +28,9 @@ export default function Home() {
   const { data: expenses, isLoading: expensesLoading } = useExpenses(month);
   const { data: balance, isLoading: balanceLoading } = useBalance(month);
   const { mutate: deleteExpense } = useDeleteExpense();
-
   const { data: users } = useUsers();
+
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
 
   if (expensesLoading || balanceLoading) {
     return (
@@ -131,11 +132,21 @@ export default function Home() {
             className="rounded-xl border border-border bg-card p-4"
           >
             <div className="flex justify-between items-center">
-              <span className="font-medium">{expense.description}</span>
-              <div className="flex items-center gap-2">
+              <span className="font-medium text-base">
+                {expense.description}
+              </span>
+              <div className="flex items-center gap-1">
                 <span className="font-semibold">
                   ${Number(expense.amount).toFixed(2)}
                 </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-primary h-10 w-10"
+                  onClick={() => setEditingExpense(expense)}
+                >
+                  ✏️
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -153,6 +164,15 @@ export default function Home() {
           </li>
         ))}
       </ul>
+      {editingExpense && (
+        <AddExpenseForm
+          expense={editingExpense}
+          open={!!editingExpense}
+          onOpenChange={(open) => {
+            if (!open) setEditingExpense(null);
+          }}
+        />
+      )}
     </main>
   );
 }
