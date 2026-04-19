@@ -11,10 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import LoginForm from "@/components/Loginform";
+
 import { useBalance } from "@/hooks/useBalance";
 import { useDeleteExpense, useExpenses } from "@/hooks/useExpenses";
 import { useUsers } from "@/hooks/useUsers";
 import { Expense } from "@/types";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const currentYear = new Date().getFullYear();
@@ -31,6 +34,10 @@ export default function Home() {
   const { data: users } = useUsers();
 
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+
+  const { credentials } = useAuth();
+
+  if (!credentials) return <LoginForm />;
 
   if (expensesLoading || balanceLoading) {
     return (
