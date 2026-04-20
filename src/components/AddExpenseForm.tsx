@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { format } from "date-fns";
 
 import { useCreateExpense, useUpdateExpense } from "@/hooks/useExpenses";
 import { useUsers } from "@/hooks/useUsers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "./ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -42,6 +45,9 @@ type Props = {
 };
 
 export default function AddExpenseForm({ expense, open, onOpenChange }: Props) {
+  const [date, setDate] = useState<Date>(
+    expense ? new Date(expense.date) : new Date(),
+  );
   const [internalOpen, setInternalOpen] = useState(false);
   const [description, setDescription] = useState(expense?.description ?? "");
   const [amount, setAmount] = useState(expense?.amount ?? "");
@@ -72,6 +78,7 @@ export default function AddExpenseForm({ expense, open, onOpenChange }: Props) {
           amount: Number(amount),
           category,
           paidById,
+          date: date.toISOString(),
         },
         {
           onSuccess: () => setIsOpen(false),
@@ -84,6 +91,7 @@ export default function AddExpenseForm({ expense, open, onOpenChange }: Props) {
           amount: Number(amount),
           category,
           paidById,
+          date: date.toISOString(),
         },
         {
           onSuccess: () => {
@@ -161,6 +169,25 @@ export default function AddExpenseForm({ expense, open, onOpenChange }: Props) {
             onChange={(e) => setAmount(e.target.value)}
             className="h-12 text-base"
           />
+          {/* Date Picker */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full h-12 text-base justify-start"
+              >
+                📅 {format(date, "PPP")}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(d) => d && setDate(d)}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           <div className="space-y-1">
             <Input
               placeholder="Description (optional)"

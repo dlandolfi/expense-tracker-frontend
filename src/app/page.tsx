@@ -139,9 +139,7 @@ export default function Home() {
             className="rounded-xl border border-border bg-card p-4"
           >
             <div className="flex justify-between items-center">
-              <span className="font-medium text-base">
-                {expense.description}
-              </span>
+              <span className="font-medium text-base">{expense.category}</span>
               <div className="flex items-center gap-1">
                 <span className="font-semibold">
                   ${Number(expense.amount).toFixed(2)}
@@ -165,7 +163,7 @@ export default function Home() {
               </div>
             </div>
             <div className="flex justify-between text-sm text-muted-foreground mt-1">
-              <span>{expense.category}</span>
+              <span>{expense.description ?? ""}</span>
               <span>Paid by {expense.paidBy.name}</span>
             </div>
           </li>

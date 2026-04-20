@@ -29,6 +29,7 @@ export function useCreateExpense() {
       amount: number;
       paidById: number;
       category: string;
+      date: string;
     }) => {
       const res = await axios.post(`${API_URL}/expenses`, data, {
         auth: credentials ?? undefined,
@@ -52,6 +53,7 @@ export function useUpdateExpense() {
       amount: number;
       paidById: number;
       category: string;
+      date: string;
     }) => {
       const res = await axios.put(`${API_URL}/expenses/${data.id}`, data, {
         auth: credentials ?? undefined,
