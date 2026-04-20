@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const { login, isInvalid } = useAuth();
 
   function handleSubmit() {
     if (!username || !password) return;
@@ -22,6 +22,11 @@ export default function LoginForm() {
         <p className="text-sm text-muted-foreground text-center">
           Sign in to continue
         </p>
+        {isInvalid && (
+          <p className="text-sm text-[#fb4934] text-center">
+            Invalid credentials. Please try again.
+          </p>
+        )}
         <Input
           placeholder="Username"
           value={username}
