@@ -78,6 +78,7 @@ export default function AddExpenseForm({ expense, open, onOpenChange }: Props) {
           amount: Number(amount),
           category,
           paidById,
+          date: date.toISOString(),
         },
         {
           onSuccess: () => setIsOpen(false),
@@ -90,6 +91,7 @@ export default function AddExpenseForm({ expense, open, onOpenChange }: Props) {
           amount: Number(amount),
           category,
           paidById,
+          date: date.toISOString(),
         },
         {
           onSuccess: () => {
