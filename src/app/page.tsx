@@ -50,7 +50,7 @@ export default function Home() {
   return (
     <main className="max-w-lg mx-auto p-4 pb-12">
       {/* Header */}
-      <div className="flex justify-between items-center py-4 mb-6 gap-2">
+      <div className="flex justify-between items-center py-4 mb-6 px-4 -mx-4 bg-(--header-bg)">
         <h1 className="text-2xl font-bold">Expense Tracker</h1>
         <AddExpenseForm />
       </div>
@@ -109,8 +109,8 @@ export default function Home() {
             key={entry.userId}
             className={`flex justify-between text-sm font-medium ${
               entry.status === "owed"
-                ? "text-[var(--color-owed)]"
-                : "text-[var(--color-owes)]"
+                ? "text-(--color-owed)"
+                : "text-(--color-owes)"
             }`}
           >
             <span>
