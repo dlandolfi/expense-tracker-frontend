@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 
 import AddExpenseForm from "@/components/AddExpenseForm";
 import { Button } from "@/components/ui/button";
@@ -12,12 +13,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import LoginForm from "@/components/Loginform";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { useBalance } from "@/hooks/useBalance";
 import { useDeleteExpense, useExpenses } from "@/hooks/useExpenses";
 import { useUsers } from "@/hooks/useUsers";
-import { Expense } from "@/types";
+import { Expense, ExpenseCategory } from "@/types";
 import { useAuth } from "@/context/AuthContext";
+
+const CATEGORIES: ExpenseCategory[] = [
+  "GROCERIES",
+  "HOUSEHOLD",
+  "UTILITIES",
+  "SUBSCRIPTIONS",
+  "DINING",
+  "COFFEE",
+  "TRANSPORT",
+  "ENTERTAINMENT",
+  "OTHER",
+];
 
 export default function Home() {
   const currentYear = new Date().getFullYear();
@@ -28,12 +51,26 @@ export default function Home() {
 
   const month = `${year}-${String(monthNum).padStart(2, "0")}`;
 
-  const { data: expenses, isLoading: expensesLoading } = useExpenses(month);
-  const { data: balance, isLoading: balanceLoading } = useBalance(month);
+  const {
+    data: expenses,
+    isLoading: expensesLoading,
+    isError: expensesError,
+    refetch: refetchExpenses,
+  } = useExpenses(month);
+  const {
+    data: balance,
+    isLoading: balanceLoading,
+    isError: balanceError,
+    refetch: refetchBalance,
+  } = useBalance(month);
   const { mutate: deleteExpense } = useDeleteExpense();
   const { data: users } = useUsers();
 
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<ExpenseCategory | "ALL">(
+    "ALL"
+  );
+  const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
 
   const { credentials } = useAuth();
 
@@ -46,6 +83,29 @@ export default function Home() {
       </div>
     );
   }
+
+  if (expensesError || balanceError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-4 text-center">
+        <p className="text-muted-foreground">
+          Something went wrong loading your expenses.
+        </p>
+        <Button
+          onClick={() => {
+            refetchExpenses();
+            refetchBalance();
+          }}
+        >
+          Try again
+        </Button>
+      </div>
+    );
+  }
+
+  const filteredExpenses = expenses?.filter(
+    (expense: Expense) =>
+      categoryFilter === "ALL" || expense.category === categoryFilter
+  );
 
   return (
     <main className="max-w-lg mx-auto p-4 pb-12">
@@ -124,46 +184,81 @@ export default function Home() {
       </div>
 
       {/* Expense List */}
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-        Expenses
-      </h2>
-      {expenses?.length === 0 && (
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Expenses
+        </h2>
+        <Select
+          value={categoryFilter}
+          onValueChange={(val) =>
+            setCategoryFilter(val as ExpenseCategory | "ALL")
+          }
+        >
+          <SelectTrigger className="w-40 h-8 capitalize">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All categories</SelectItem>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c} className="capitalize">
+                {c.toLowerCase()}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      {filteredExpenses?.length === 0 && (
         <p className="text-center text-muted-foreground py-8">
-          No expenses this month
+          {categoryFilter === "ALL"
+            ? "No expenses this month"
+            : "No expenses in this category"}
         </p>
       )}
       <ul className="space-y-3">
-        {expenses?.map((expense: Expense) => (
+        {filteredExpenses?.map((expense: Expense) => (
           <li
             key={expense.id}
             className="rounded-xl border border-border bg-card p-4"
           >
             <div className="flex justify-between items-center">
-              <span className="font-medium text-base">{expense.category}</span>
+              <span className="font-medium text-base">
+                {expense.description ?? ""}
+              </span>
               <div className="flex items-center gap-1">
                 <span className="font-semibold">
                   ${Number(expense.amount).toFixed(2)}
                 </span>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-primary h-10 w-10"
+                  size="icon"
+                  className="text-muted-foreground hover:text-primary h-7 w-7"
                   onClick={() => setEditingExpense(expense)}
                 >
-                  ✏️
+                  <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-destructive h-10 w-10 text-base"
-                  onClick={() => deleteExpense(expense.id)}
+                  size="icon"
+                  aria-label="Delete expense"
+                  className="text-muted-foreground hover:text-destructive h-7 w-7"
+                  onClick={() => setDeletingExpense(expense)}
                 >
-                  ✕
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
             <div className="flex justify-between text-sm text-muted-foreground mt-1">
-              <span>{expense.description ?? ""}</span>
+              <span>
+                {new Date(expense.date).toLocaleDateString("default", {
+                  month: "short",
+                  day: "numeric",
+                  timeZone: "UTC",
+                })}
+                {" · "}
+                <span className="capitalize">
+                  {expense.category.toLowerCase()}
+                </span>
+              </span>
               <span>Paid by {expense.paidBy.name}</span>
             </div>
           </li>
@@ -178,6 +273,37 @@ export default function Home() {
           }}
         />
       )}
+      <AlertDialog
+        open={!!deletingExpense}
+        onOpenChange={(open) => {
+          if (!open) setDeletingExpense(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete expense?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deletingExpense
+                ? `"${deletingExpense.description || deletingExpense.category}" for $${Number(
+                    deletingExpense.amount
+                  ).toFixed(2)} will be permanently deleted.`
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (deletingExpense) deleteExpense(deletingExpense.id);
+                setDeletingExpense(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }
