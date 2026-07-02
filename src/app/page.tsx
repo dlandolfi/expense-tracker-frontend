@@ -17,8 +17,20 @@ import LoginForm from "@/components/Loginform";
 import { useBalance } from "@/hooks/useBalance";
 import { useDeleteExpense, useExpenses } from "@/hooks/useExpenses";
 import { useUsers } from "@/hooks/useUsers";
-import { Expense } from "@/types";
+import { Expense, ExpenseCategory } from "@/types";
 import { useAuth } from "@/context/AuthContext";
+
+const CATEGORIES: ExpenseCategory[] = [
+  "GROCERIES",
+  "HOUSEHOLD",
+  "UTILITIES",
+  "SUBSCRIPTIONS",
+  "DINING",
+  "COFFEE",
+  "TRANSPORT",
+  "ENTERTAINMENT",
+  "OTHER",
+];
 
 export default function Home() {
   const currentYear = new Date().getFullYear();
@@ -35,6 +47,9 @@ export default function Home() {
   const { data: users } = useUsers();
 
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<ExpenseCategory | "ALL">(
+    "ALL"
+  );
 
   const { credentials } = useAuth();
 
@@ -47,6 +62,11 @@ export default function Home() {
       </div>
     );
   }
+
+  const filteredExpenses = expenses?.filter(
+    (expense: Expense) =>
+      categoryFilter === "ALL" || expense.category === categoryFilter
+  );
 
   return (
     <main className="max-w-lg mx-auto p-4 pb-12">
@@ -125,16 +145,38 @@ export default function Home() {
       </div>
 
       {/* Expense List */}
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-        Expenses
-      </h2>
-      {expenses?.length === 0 && (
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Expenses
+        </h2>
+        <Select
+          value={categoryFilter}
+          onValueChange={(val) =>
+            setCategoryFilter(val as ExpenseCategory | "ALL")
+          }
+        >
+          <SelectTrigger className="w-40 h-8 capitalize">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All categories</SelectItem>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c} className="capitalize">
+                {c.toLowerCase()}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      {filteredExpenses?.length === 0 && (
         <p className="text-center text-muted-foreground py-8">
-          No expenses this month
+          {categoryFilter === "ALL"
+            ? "No expenses this month"
+            : "No expenses in this category"}
         </p>
       )}
       <ul className="space-y-3">
-        {expenses?.map((expense: Expense) => (
+        {filteredExpenses?.map((expense: Expense) => (
           <li
             key={expense.id}
             className="rounded-xl border border-border bg-card p-4"
