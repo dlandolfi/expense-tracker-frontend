@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { toast } from "sonner";
 import { Expense } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 
@@ -39,6 +40,10 @@ export function useCreateExpense() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
       queryClient.invalidateQueries({ queryKey: ["balance"] });
+      toast.success("Expense added");
+    },
+    onError: () => {
+      toast.error("Failed to add expense");
     },
   });
 }
@@ -63,6 +68,10 @@ export function useUpdateExpense() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
       queryClient.invalidateQueries({ queryKey: ["balance"] });
+      toast.success("Expense updated");
+    },
+    onError: () => {
+      toast.error("Failed to update expense");
     },
   });
 }
@@ -80,6 +89,10 @@ export function useDeleteExpense() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
       queryClient.invalidateQueries({ queryKey: ["balance"] });
+      toast.success("Expense deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete expense");
     },
   });
 }
