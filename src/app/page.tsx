@@ -166,7 +166,15 @@ export default function Home() {
               </div>
             </div>
             <div className="flex justify-between text-sm text-muted-foreground mt-1">
-              <span>{expense.category}</span>
+              <span>
+                {new Date(expense.date).toLocaleDateString("default", {
+                  month: "short",
+                  day: "numeric",
+                  timeZone: "UTC",
+                })}
+                {" · "}
+                {expense.category}
+              </span>
               <span>Paid by {expense.paidBy.name}</span>
             </div>
           </li>
