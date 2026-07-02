@@ -51,8 +51,18 @@ export default function Home() {
 
   const month = `${year}-${String(monthNum).padStart(2, "0")}`;
 
-  const { data: expenses, isLoading: expensesLoading } = useExpenses(month);
-  const { data: balance, isLoading: balanceLoading } = useBalance(month);
+  const {
+    data: expenses,
+    isLoading: expensesLoading,
+    isError: expensesError,
+    refetch: refetchExpenses,
+  } = useExpenses(month);
+  const {
+    data: balance,
+    isLoading: balanceLoading,
+    isError: balanceError,
+    refetch: refetchBalance,
+  } = useBalance(month);
   const { mutate: deleteExpense } = useDeleteExpense();
   const { data: users } = useUsers();
 
@@ -70,6 +80,24 @@ export default function Home() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (expensesError || balanceError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-4 text-center">
+        <p className="text-muted-foreground">
+          Something went wrong loading your expenses.
+        </p>
+        <Button
+          onClick={() => {
+            refetchExpenses();
+            refetchBalance();
+          }}
+        >
+          Try again
+        </Button>
       </div>
     );
   }
