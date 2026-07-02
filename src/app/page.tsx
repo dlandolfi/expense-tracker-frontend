@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 
 import AddExpenseForm from "@/components/AddExpenseForm";
 import { Button } from "@/components/ui/button";
@@ -139,31 +140,33 @@ export default function Home() {
             className="rounded-xl border border-border bg-card p-4"
           >
             <div className="flex justify-between items-center">
-              <span className="font-medium text-base">{expense.category}</span>
+              <span className="font-medium text-base">
+                {expense.description ?? ""}
+              </span>
               <div className="flex items-center gap-1">
                 <span className="font-semibold">
                   ${Number(expense.amount).toFixed(2)}
                 </span>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-primary h-10 w-10"
+                  size="icon"
+                  className="text-muted-foreground hover:text-primary h-7 w-7"
                   onClick={() => setEditingExpense(expense)}
                 >
-                  ✏️
+                  <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-destructive h-10 w-10 text-base"
+                  size="icon"
+                  className="text-muted-foreground hover:text-destructive h-7 w-7"
                   onClick={() => deleteExpense(expense.id)}
                 >
-                  ✕
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
             <div className="flex justify-between text-sm text-muted-foreground mt-1">
-              <span>{expense.description ?? ""}</span>
+              <span>{expense.category}</span>
               <span>Paid by {expense.paidBy.name}</span>
             </div>
           </li>
