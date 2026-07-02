@@ -13,6 +13,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import LoginForm from "@/components/Loginform";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { useBalance } from "@/hooks/useBalance";
 import { useDeleteExpense, useExpenses } from "@/hooks/useExpenses";
@@ -50,6 +60,7 @@ export default function Home() {
   const [categoryFilter, setCategoryFilter] = useState<ExpenseCategory | "ALL">(
     "ALL"
   );
+  const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
 
   const { credentials } = useAuth();
 
@@ -200,8 +211,9 @@ export default function Home() {
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="Delete expense"
                   className="text-muted-foreground hover:text-destructive h-7 w-7"
-                  onClick={() => deleteExpense(expense.id)}
+                  onClick={() => setDeletingExpense(expense)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -231,6 +243,37 @@ export default function Home() {
           }}
         />
       )}
+      <AlertDialog
+        open={!!deletingExpense}
+        onOpenChange={(open) => {
+          if (!open) setDeletingExpense(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete expense?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deletingExpense
+                ? `"${deletingExpense.description || deletingExpense.category}" for $${Number(
+                    deletingExpense.amount
+                  ).toFixed(2)} will be permanently deleted.`
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (deletingExpense) deleteExpense(deletingExpense.id);
+                setDeletingExpense(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }
