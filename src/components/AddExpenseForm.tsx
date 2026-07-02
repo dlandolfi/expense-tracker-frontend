@@ -130,13 +130,17 @@ export default function AddExpenseForm({ expense, open, onOpenChange }: Props) {
               value={category}
               onValueChange={(val) => setCategory(val as ExpenseCategory)}
             >
-              <SelectTrigger className="h-12 text-base flex-1">
+              <SelectTrigger className="h-12 text-base flex-1 capitalize">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
                 {CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat} className="text-base py-3">
-                    {cat}
+                  <SelectItem
+                    key={cat}
+                    value={cat}
+                    className="text-base py-3 capitalize"
+                  >
+                    {cat.toLowerCase()}
                   </SelectItem>
                 ))}
               </SelectContent>

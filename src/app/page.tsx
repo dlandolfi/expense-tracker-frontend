@@ -227,7 +227,9 @@ export default function Home() {
                   timeZone: "UTC",
                 })}
                 {" · "}
-                {expense.category}
+                <span className="capitalize">
+                  {expense.category.toLowerCase()}
+                </span>
               </span>
               <span>Paid by {expense.paidBy.name}</span>
             </div>
